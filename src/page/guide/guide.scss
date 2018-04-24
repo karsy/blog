@@ -1,0 +1,25 @@
+.guide{
+  background-color: #fff;
+  .inner {
+    padding: 10px 40px;
+    font-family: 'Source Sans Pro', 'Helvetica Neue', Arial, sans-serif;
+    ul {
+      li {
+        line-height: 32px;
+      }
+    }
+    img {
+      margin-left: 5px;
+    }
+    code {
+      background-color: #f1f1f1;
+      padding: 2px;
+      font-size: 16px;
+      border-radius: 2px;
+      font-family: 'Source Sans Pro', 'Helvetica Neue', Arial, sans-serif;
+    }
+    .pdl {
+      padding-left: 30px;
+    }
+  }
+}
