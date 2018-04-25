@@ -18,7 +18,7 @@ class Home extends React.Component {
     return (
       <div className="home">
         <Header />
-        我是首页
+        我是首页111
         我的值是：{a}
         <button
           onClick={() => {

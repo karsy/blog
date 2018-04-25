@@ -1,12 +1,12 @@
 const webpack = require('webpack');
-const ExtractTextWebapckPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
-const sassExtract = new ExtractTextWebapckPlugin('css/sass.css');
+const devMode = process.env.NODE_ENV !== 'production';
 
 module.exports = {
-  devtool: 'source-map',
+  devtool: devMode ? 'cheap-module-eval-source-map' : 'cheap-module-source-map',
 
   entry: './src/app.js',
 
@@ -28,14 +28,24 @@ module.exports = {
     proxy: { // proxy URLs to backend development server
       '/api': 'http://localhost:3009'
     },
-    host: 'localhost', // 主机地址
+    host: '127.0.0.1', // 主机地址
     port: 3000, // 端口号
     contentBase: path.join(__dirname, 'dist'), // boolean | string | array, static file location
     compress: true, // enable gzip compression
+    // color: true,
+    open: true,
     historyApiFallback: true, // true for index.html upon 404, object for multiple paths
     hot: true, // hot module replacement. Depends on HotModuleReplacementPlugin
     https: false, // true for self-signed, object for cert authority
-    noInfo: true // only errors & warns on hot reload
+    stats: {
+      colors: true,
+      children: false, // 增加子级的信息
+      chunks: false, // 增加包信息（设置为 `false` 能允许较少的冗长输出）
+      chunkModules: false,
+      modules: false, // 增加内置的模块信息
+      reasons: false, // 增加模块被引入的原因
+      source: false // 增加模块的源码
+    }
     // ...
   },
 
@@ -60,18 +70,24 @@ module.exports = {
         exclude: [
           path.resolve(__dirname, 'node_modules')
         ],
-        use: ExtractTextWebapckPlugin.extract({
-          use: 'css-loader'
-        })
+        use: [
+          devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader'
+        ]
       },
       {
         test: /\.scss?$/,
         exclude: [
           path.resolve(__dirname, 'node_modules')
         ],
-        use: sassExtract.extract({
-          use: ['css-loader', 'sass-loader']
-        })
+        // use: sassExtract.extract({
+        //   use: ['css-loader', 'sass-loader']
+        // })
+        use: [
+          devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader'
+        ]
       },
       {
         test: /\.(png|jpe?g|gif|woff|woff2|ttf|otf)$/,
@@ -84,11 +100,6 @@ module.exports = {
   },
 
   plugins: [
-    // 构建优化插件config.optimization.splitChunks
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'vendor',
-    //   filename: 'vendor-[hash].min.js'
-    // }),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
@@ -98,14 +109,26 @@ module.exports = {
         removeAttributeQuotes: true // 压缩 去掉引号
       }
     }),
-    new ExtractTextWebapckPlugin({
-      filename: 'build.min.css',
-      allChunks: true
-    }),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': '"development"'
+    // new ExtractTextWebapckPlugin({
+    //   filename: '[name].css',
+    //   allChunks: true
+    // }),
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: '[name].css',
+      chunkFilename: '[id].css'
     })
   ],
+  stats: {
+    colors: true,
+    children: false, // 增加子级的信息
+    chunks: false, // 增加包信息（设置为 `false` 能允许较少的冗长输出）
+    chunkModules: false,
+    modules: false, // 增加内置的模块信息
+    reasons: false, // 增加模块被引入的原因
+    source: false // 增加模块的源码
+  },
 
   // optimization: {
   //   splitChunks: { // 提取公共模块
