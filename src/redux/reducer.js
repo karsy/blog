@@ -28,12 +28,20 @@ const home = (state = defaultState.home, { type, payload }) => {
         a: value
       };
     }
+    case 'CHANGE_KEY':
+    {
+      const value = payload;
+      return {
+        ...state,
+        currentKey: value
+      };
+    }
     default:
       return state;
   }
 };
 
-const guide = (state = defaultState.guide, { type, payload }) => {
+const blog = (state = defaultState.blog, { type, payload }) => {
   switch (type) {
     case 'HAHA333':
     {
@@ -52,7 +60,7 @@ const guide = (state = defaultState.guide, { type, payload }) => {
 const reducer = combineReducers({
   global,
   home,
-  guide
+  blog
 });
 
 export default reducer;

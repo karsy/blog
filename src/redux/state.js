@@ -5,9 +5,10 @@ export default {
   },
   home: {
     a: '',
+    currentKey: 'blog',
     b: {}
   },
-  guide: {
+  blog: {
     a: '',
     b: {}
   }

@@ -1,50 +1,81 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Menu, Icon, Button } from 'antd';
-
-import { alertHaha111, alertHaha222 } from '../../redux/action';
+import { Route } from 'react-router-dom';
+import { Menu, Icon, Layout } from 'antd';
+import { changeCurrentKey } from '../../redux/action';
+import Blog from '../blog';
 
 import './home.less';
+
+const { Header, Footer, Content } = Layout;
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+    };
+    this.handleClick = this.handleClick.bind(this);
   }
+
+  handleClick(e) {
+    const { history } = this.props;
+    console.log('click ', e);
+    if (e.key === this.props.currentKey) return;
+    this.props.changeCurrentKey(e.key);
+    history.push(`/home/${e.key}`);
+  }
+
   render() {
-    const { a, alertHaha111 } = this.props;
+    const { match } = this.props;
     return (
       <div className="home">
-        我是首页111
-        我的值是：{a}
-        <Button
-          onClick={() => {
-            alertHaha111('111');
-          }}
-        >点击我</Button>
-        <Menu
-          onClick={this.handleClick}
-          selectedKeys={[this.state.current]}
-          mode="horizontal"
-        >
-          <Menu.Item key="mail">
-            <Icon type="mail" />Navigation One
-          </Menu.Item>
-          <Menu.Item key="app" disabled>
-            <Icon type="appstore" />Navigation Two
-          </Menu.Item>
-          <Menu.Item key="alipay">
-            <a href="https://ant.design" target="_blank" rel="noopener noreferrer">Navigation Four - Link</a>
-          </Menu.Item>
-        </Menu>
+        <Layout className="layout">
+          <Header>
+            <div className="logo">
+              <img src="logo.png" alt="karsy博客" />
+            </div>
+            <div className="nav">
+              <Menu
+                onClick={this.handleClick}
+                selectedKeys={[this.props.currentKey]}
+                mode="horizontal"
+                style={{ lineHeight: '64px' }}
+              >
+                <Menu.Item key="blog">
+                  <Icon type="mail" />博客
+                </Menu.Item>
+                <Menu.Item key="openSource">
+                  <Icon type="mail" />开源
+                </Menu.Item>
+                <Menu.Item key="tool">
+                  <Icon type="mail" />工具
+                </Menu.Item>
+                <Menu.Item key="message">
+                  <Icon type="mail" />留言
+                </Menu.Item>
+                <Menu.Item key="about">
+                  <Icon type="mail" />关于
+                </Menu.Item>
+              </Menu>
+            </div>
+          </Header>
+          <Content>
+            <Route exact path={`${match.url}`} component={Blog} />
+            <Route path={`${match.url}/blog`} component={Blog} />
+            <Route path={`${match.url}/openSource`} render={() => <h3>Please select a openSource.</h3>} />
+            <Route path={`${match.url}/tool`} render={() => <h3>Please select a tool.</h3>} />
+            <Route path={`${match.url}/message`} render={() => <h3>Please select a message.</h3>} />
+            <Route path={`${match.url}/about`} render={() => <h3>Please select a about.</h3>} />
+          </Content>
+          <Footer>我们是共产主义接班人</Footer>
+        </Layout>
       </div>
     );
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  alertHaha111: value => dispatch(alertHaha111(value)),
-  alertHaha222: value => dispatch(alertHaha222(value))
+  changeCurrentKey: value => dispatch(changeCurrentKey(value))
 });
 
 const mapStateToProps = ({ home, global }) => ({

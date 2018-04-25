@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import React, { Component } from 'react';
 import store from './redux/store';
 import Home from './page/home';
-import Guide from './page/guide';
 
 class App extends Component {
   constructor(props) {
@@ -20,8 +19,6 @@ class App extends Component {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/home" component={Home} />
-
-            <Route path="/guide/:id" component={Guide} />
           </Switch>
         </HashRouter>
       </Provider>

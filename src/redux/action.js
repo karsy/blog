@@ -1,3 +1,10 @@
+export const changeCurrentKey = value => (dispatch) => {
+  dispatch({
+    type: 'CHANGE_KEY',
+    payload: value
+  });
+};
+
 export const alertHaha111 = value => (dispatch) => {
   setTimeout(() => {
     dispatch({
