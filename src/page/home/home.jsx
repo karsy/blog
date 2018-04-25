@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Header from '../../component/header';
-import Footer from '../../component/footer';
+import { Menu, Icon, Button } from 'antd';
 
 import { alertHaha111, alertHaha222 } from '../../redux/action';
 
@@ -17,15 +15,28 @@ class Home extends React.Component {
     const { a, alertHaha111 } = this.props;
     return (
       <div className="home">
-        <Header />
         我是首页111
         我的值是：{a}
-        <button
+        <Button
           onClick={() => {
             alertHaha111('111');
           }}
-        >点击我</button>
-        <Footer />
+        >点击我</Button>
+        <Menu
+          onClick={this.handleClick}
+          selectedKeys={[this.state.current]}
+          mode="horizontal"
+        >
+          <Menu.Item key="mail">
+            <Icon type="mail" />Navigation One
+          </Menu.Item>
+          <Menu.Item key="app" disabled>
+            <Icon type="appstore" />Navigation Two
+          </Menu.Item>
+          <Menu.Item key="alipay">
+            <a href="https://ant.design" target="_blank" rel="noopener noreferrer">Navigation Four - Link</a>
+          </Menu.Item>
+        </Menu>
       </div>
     );
   }
