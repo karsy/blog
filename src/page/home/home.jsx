@@ -4,7 +4,7 @@ import { Menu, Icon, Button } from 'antd';
 
 import { alertHaha111, alertHaha222 } from '../../redux/action';
 
-import './home.scss';
+import './home.less';
 
 class Home extends React.Component {
   constructor(props) {

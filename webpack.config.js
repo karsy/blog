@@ -66,27 +66,29 @@ module.exports = {
         loader: 'json-loader'
       },
       {
-        test: /\.css?$/,
+        test: /\.css$/,
         exclude: [
           path.resolve(__dirname, 'node_modules')
         ],
         use: [
           devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'style-loader',
           'css-loader'
         ]
       },
       {
-        test: /\.scss?$/,
-        exclude: [
-          path.resolve(__dirname, 'node_modules')
-        ],
+        test: /\.less$/,
         // use: sassExtract.extract({
         //   use: ['css-loader', 'sass-loader']
         // })
         use: [
           devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+          // 'style-loader',
           'css-loader',
-          'sass-loader'
+          {
+            loader: 'less-loader',
+            options: { javascriptEnabled: true }
+          }
         ]
       },
       {
