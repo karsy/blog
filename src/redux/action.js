@@ -35,11 +35,11 @@ export const alertHaha333 = value => (dispatch) => {
   }, 1000);
 };
 
-export const changeSort = value => (dispatch) => {
-  alert(`当前的分类是：${value}`);
+export const changeSort = key => (dispatch) => {
+  alert(`当前的分类是：${key}`);
   dispatch({
     type: 'CHANGE_SORT_KEY',
-    payload: value
+    payload: key
   });
 };
 
@@ -99,3 +99,35 @@ export const getSortList = () => (dispatch) => {
     });
 };
 
+export const getArticleList = type => (dispatch) => {
+  axios.get('http://localhost:3001/blog/queryArticle', {
+    params: {
+      type
+    }
+  })
+    .then((response) => {
+      const data = response.data.content.retValue;
+      dispatch({
+        type: 'GET_ARTICLE_LIST',
+        payload: data
+      });
+    });
+};
+
+export const getArticleById = id => (dispatch) => {
+  axios.get('http://localhost:3001/blog/getArticleById', {
+    params: {
+      id
+    }
+  })
+    .then((response) => {
+      const data = response.data.content.retValue;
+      dispatch({
+        type: 'GET_ARTICLE_DETAIL',
+        payload: data
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};

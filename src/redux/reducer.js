@@ -67,6 +67,29 @@ const blog = (state = defaultState.blog, { type, payload }) => {
         sortList: value
       };
     }
+    case 'GET_ARTICLE_LIST':
+    {
+      const value = payload;
+      return {
+        ...state,
+        articleList: value
+      };
+    }
+    default:
+      return state;
+  }
+};
+
+const article = (state = defaultState.article, { type, payload }) => {
+  switch (type) {
+    case 'GET_ARTICLE_DETAIL':
+    {
+      const value = payload;
+      return {
+        ...state,
+        articleDetail: value
+      };
+    }
     default:
       return state;
   }
@@ -75,7 +98,8 @@ const blog = (state = defaultState.blog, { type, payload }) => {
 const reducer = combineReducers({
   global,
   home,
-  blog
+  blog,
+  article
 });
 
 export default reducer;

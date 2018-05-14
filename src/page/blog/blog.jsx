@@ -1,10 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, Menu, Avatar } from 'antd';
+import dayjs from 'dayjs';
 import {
   alertHaha333,
   changeSort,
-  getSortList
+  getSortList,
+  getArticleList
 } from '../../redux/action';
 
 import './blog.less';
@@ -15,13 +17,20 @@ class Blog extends React.Component {
     this.state = {
     };
     this.handleClick = this.handleClick.bind(this);
+    this.handleArticleClick = this.handleArticleClick.bind(this);
   }
   componentDidMount() {
     this.props.getSortList();
+    this.props.getArticleList();
   }
   handleClick(e) {
     if (e.key === this.props.currentKey) return;
     this.props.changeSort(e.key);
+  }
+  handleArticleClick(id) {
+    const { history } = this.props;
+    console.log('我的id: ', id);
+    history.push(`/home/article/${id}`);
   }
   render() {
     const menuItems = this.props.sortList.map((item) => {
@@ -32,7 +41,21 @@ class Blog extends React.Component {
         </Menu.Item>
       );
     });
-    console.log('defaultSortKey', this.props.defaultSortKey);
+    console.log('articleList', this.props.articleList);
+    const articleList = this.props.articleList.map((item) => {
+      return (
+        <li
+          className="li-article"
+          onClick={this.handleArticleClick.bind(this, item.id)}
+          key={item.id}
+        >
+          <p>{item.title}</p>
+          <p>{item.sort}</p>
+          <p>{dayjs(item.date).format('YYYY-MM-DD')}</p>
+          <p>{item.digest}</p>
+        </li>
+      );
+    });
     return (
       <div className="blog">
         <Row>
@@ -52,14 +75,10 @@ class Blog extends React.Component {
           <Col span={16}>
             <div className="list">
               <div className="top-search-bar">文章列表</div>
-              <div className="list-active">
+              <div className="list-article">
                 <div style={{ height: '2000px' }}>
                   <ul>
-                    <li>1</li>
-                    <li>1</li>
-                    <li>1</li>
-                    <li>1</li>
-                    <li>1</li>
+                    {articleList}
                   </ul>
                 </div>
               </div>
@@ -74,8 +93,9 @@ class Blog extends React.Component {
 
 const mapDispatchToProps = dispatch => ({
   alertHaha333: value => dispatch(alertHaha333(value)),
-  changeSort: value => dispatch(changeSort(value)),
-  getSortList: () => dispatch(getSortList())
+  changeSort: key => dispatch(changeSort(key)),
+  getSortList: () => dispatch(getSortList()),
+  getArticleList: type => dispatch(getArticleList(type))
 });
 
 const mapStateToProps = ({ global, blog }) => ({

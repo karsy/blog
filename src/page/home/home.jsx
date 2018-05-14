@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom';
 import { Menu, Icon, Layout } from 'antd';
 import { changeCurrentKey } from '../../redux/action';
 import Blog from '../blog';
+import Article from '../article';
 
 import './home.less';
 
@@ -19,7 +20,6 @@ class Home extends React.Component {
 
   handleClick(e) {
     const { history } = this.props;
-    console.log('click ', e);
     if (e.key === this.props.currentKey) return;
     this.props.changeCurrentKey(e.key);
     history.push(`/home/${e.key}`);
@@ -62,6 +62,7 @@ class Home extends React.Component {
           <Content>
             <Route exact path={`${match.url}`} component={Blog} />
             <Route path={`${match.url}/blog`} component={Blog} />
+            <Route path={`${match.url}/article/:id`} component={Article} />
             <Route path={`${match.url}/openSource`} render={() => <h3>Please select a openSource.</h3>} />
             <Route path={`${match.url}/tool`} render={() => <h3>Please select a tool.</h3>} />
             <Route path={`${match.url}/message`} render={() => <h3>Please select a message.</h3>} />

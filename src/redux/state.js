@@ -11,8 +11,12 @@ export default {
   blog: {
     currentKey: 'all',
     sortList: [],
+    articleList: [],
     b: {
 
     }
+  },
+  article: {
+    articleDetail: {}
   }
 };
