@@ -1,7 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Row, Col, Menu, Icon } from 'antd';
-import { alertHaha333 } from '../../redux/action';
+import { Row, Col, Menu, Avatar } from 'antd';
+import {
+  alertHaha333,
+  changeSort,
+  getSortList
+} from '../../redux/action';
 
 import './blog.less';
 
@@ -10,8 +14,25 @@ class Blog extends React.Component {
     super(props);
     this.state = {
     };
+    this.handleClick = this.handleClick.bind(this);
+  }
+  componentDidMount() {
+    this.props.getSortList();
+  }
+  handleClick(e) {
+    if (e.key === this.props.currentKey) return;
+    this.props.changeSort(e.key);
   }
   render() {
+    const menuItems = this.props.sortList.map((item) => {
+      return (
+        <Menu.Item key={item.type}>
+          {item.logo ? <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" /> : null}
+          {item.name}
+        </Menu.Item>
+      );
+    });
+    console.log('defaultSortKey', this.props.defaultSortKey);
     return (
       <div className="blog">
         <Row>
@@ -19,17 +40,12 @@ class Blog extends React.Component {
             <div className="menu">
               <div className="top-search-bar">文章分类</div>
               <Menu
-                defaultSelectedKeys={['1']}
+                selectedKeys={[this.props.currentKey]}
+                onClick={this.handleClick}
                 theme="light"
                 mode="inline"
               >
-                <Menu.Item key="1">
-                  <Icon type="mail" />
-                  Navigation One
-                </Menu.Item>
-                <Menu.Item key="2">Option 2</Menu.Item>
-                <Menu.Item key="3">Option 3</Menu.Item>
-                <Menu.Item key="4">Option 4</Menu.Item>
+                {menuItems}
               </Menu>
             </div>
           </Col>
@@ -57,7 +73,9 @@ class Blog extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  alertHaha333: value => dispatch(alertHaha333(value))
+  alertHaha333: value => dispatch(alertHaha333(value)),
+  changeSort: value => dispatch(changeSort(value)),
+  getSortList: () => dispatch(getSortList())
 });
 
 const mapStateToProps = ({ global, blog }) => ({

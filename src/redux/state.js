@@ -9,7 +9,10 @@ export default {
     b: {}
   },
   blog: {
-    a: '',
-    b: {}
+    currentKey: 'all',
+    sortList: [],
+    b: {
+
+    }
   }
 };

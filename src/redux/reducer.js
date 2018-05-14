@@ -46,10 +46,25 @@ const blog = (state = defaultState.blog, { type, payload }) => {
     case 'HAHA333':
     {
       const value = payload;
-      alert(value);
       return {
         ...state,
         a: value
+      };
+    }
+    case 'CHANGE_SORT_KEY':
+    {
+      const value = payload;
+      return {
+        ...state,
+        currentKey: value
+      };
+    }
+    case 'GET_SORTLIST':
+    {
+      const value = payload;
+      return {
+        ...state,
+        sortList: value
       };
     }
     default:
