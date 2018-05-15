@@ -2,14 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 import marked from 'marked';
 import highlight from 'highlight.js';
-import { } from 'antd';
+import { Anchor } from 'antd';
 import dayjs from 'dayjs';
 // import toc from 'markdown-toc';
 import {
   getArticleById
 } from '../../redux/action';
+import { convertLexerToTree } from './const';
 
 import './article.less';
+
+const { Link } = Anchor;
 
 // 源码如下：
 // Renderer.prototype.heading = (text, level, raw) => {
@@ -30,7 +33,7 @@ import './article.less';
 // };
 
 // 重写heading源码，让id = text（当出现两个相同的toc时，会生成两个同样的id，这点待hack）
-marked.Renderer.prototype.heading = (text, level, raw) => {
+marked.Renderer.prototype.heading = (text, level) => {
   return `<h${level} id="${text}">${text}</h${level}>\n`;
 };
 // 设置语法高亮
@@ -53,6 +56,7 @@ class Article extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isFixed: false
     };
   }
   componentDidMount() {
@@ -68,11 +72,25 @@ class Article extends React.Component {
     // const tocX = toc(this.props.articleDetail.content || '');
     // console.log(tocRender(this.props.articleDetail.content || ''));
     // console.log(tocX);
+    const tocComponent = lexerData.map((item) => {
+      return (
+        <Link key={`${item.depth}-${item.text}`} href={`#${item.text}`} title={item.text} />
+      );
+    });
     return (
       <div className="article">
         <div className="readme">
           <div className="markdown-body" dangerouslySetInnerHTML={{ __html: mdHtml }} />
         </div>
+        <div className="toc-box">
+          <Anchor>
+            <div className="toc">
+              <span className="toc-title">文章目录</span>
+              {tocComponent}
+            </div>
+          </Anchor>
+        </div>
+
       </div>
     );
   }
