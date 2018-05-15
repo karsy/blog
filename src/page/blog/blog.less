@@ -24,11 +24,30 @@
       position: relative;
       max-height: 600px;
       ul {
-        padding: 20px;
+        padding: 0 20px;
         .li-article {
-          height: 90px;
           border-bottom: 1px dashed #E8E8E8;
           cursor: pointer;
+          padding: 20px 0;
+          p {
+            margin-bottom: 0;
+          }
+          .article-title {
+            font-size: 18px;
+            font-weight: 600;
+          }
+          .article-digest {
+            margin-top: 20px;
+          }
+          .article-sort-calendar {
+            margin-top: 5px;
+            span {
+              padding-right: 30px;
+            }
+            i {
+              padding-right: 4px;
+            }
+          }
         }
       }
     }

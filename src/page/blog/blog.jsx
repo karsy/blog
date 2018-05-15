@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Row, Col, Menu, Avatar } from 'antd';
+import { Row, Col, Menu, Avatar, Icon } from 'antd';
 import dayjs from 'dayjs';
 import {
   alertHaha333,
@@ -29,7 +29,6 @@ class Blog extends React.Component {
   }
   handleArticleClick(id) {
     const { history } = this.props;
-    console.log('我的id: ', id);
     history.push(`/home/article/${id}`);
   }
   render() {
@@ -41,7 +40,6 @@ class Blog extends React.Component {
         </Menu.Item>
       );
     });
-    console.log('articleList', this.props.articleList);
     const articleList = this.props.articleList.map((item) => {
       return (
         <li
@@ -49,10 +47,12 @@ class Blog extends React.Component {
           onClick={this.handleArticleClick.bind(this, item.id)}
           key={item.id}
         >
-          <p>{item.title}</p>
-          <p>{item.sort}</p>
-          <p>{dayjs(item.date).format('YYYY-MM-DD')}</p>
-          <p>{item.digest}</p>
+          <p className="article-title">{item.title}</p>
+          <p className="article-sort-calendar">
+            <span><Icon type="profile" />{item.sort}</span>
+            <span><Icon type="calendar" />{dayjs(item.date).format('YYYY-MM-DD')}</span>
+          </p>
+          <p className="article-digest">{item.digest}</p>
         </li>
       );
     });

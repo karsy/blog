@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import marked from 'marked';
 import highlight from 'highlight.js';
-import { Anchor } from 'antd';
+import { Anchor, Icon } from 'antd';
 import dayjs from 'dayjs';
 // import toc from 'markdown-toc';
 import {
@@ -32,10 +32,18 @@ const { Link } = Anchor;
 //   return '<h' + level + '>' + text + '</h' + level + '>\n';
 // };
 
-// 重写heading源码，让id = text（当出现两个相同的toc时，会生成两个同样的id，这点待hack）
+// 重写heading源码，自定义render，同时修复``转成code的问题，让id = text（当出现两个相同的toc时，会生成两个同样的id，这点待fix）
 marked.Renderer.prototype.heading = (text, level) => {
-  return `<h${level} id="${text}">${text}</h${level}>\n`;
+  const rules = [
+    { from: /<code>/g, to: '`' },
+    { from: /<\/code>/g, to: '`' }
+  ];
+  const saveText = text;
+  let decodeText = text;
+  rules.forEach((item) => { decodeText = decodeText.replace(item.from, item.to); });
+  return `<h${level} id="${decodeText}">${saveText}</h${level}>\n`;
 };
+
 // 设置语法高亮
 marked.setOptions({
   highlight: (code) => {
@@ -56,7 +64,6 @@ class Article extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isFixed: false
     };
   }
   componentDidMount() {
@@ -68,6 +75,7 @@ class Article extends React.Component {
     // console.log(JSON.stringify(this.props.articleDetail));
     const mdHtml = marked(this.props.articleDetail.content || '');
     const lexerData = marked.lexer(this.props.articleDetail.content || '').filter(item => item.type === 'heading');
+    const isShowToc = lexerData.length >= 1;
     console.log(lexerData);
     // const tocX = toc(this.props.articleDetail.content || '');
     // console.log(tocRender(this.props.articleDetail.content || ''));
@@ -79,18 +87,27 @@ class Article extends React.Component {
     });
     return (
       <div className="article">
-        <div className="readme">
-          <div className="markdown-body" dangerouslySetInnerHTML={{ __html: mdHtml }} />
+        <div className="article-post" style={{ width: `${isShowToc ? 900 : 1180}px` }}>
+          <div className="article-title">{this.props.articleDetail.title}</div>
+          <div className="article-sort-calendar">
+            <span><Icon type="profile" />{this.props.articleDetail.sort}</span>
+            <span><Icon type="calendar" />{dayjs(this.props.articleDetail.date).format('YYYY-MM-DD')}</span>
+          </div>
+          <div className="article-digest"><span>摘要：</span>{this.props.articleDetail.digest}</div>
+          <div className="readme">
+            <div className="markdown-body" dangerouslySetInnerHTML={{ __html: mdHtml }} />
+          </div>
         </div>
-        <div className="toc-box">
-          <Anchor>
-            <div className="toc">
-              <span className="toc-title">文章目录</span>
-              {tocComponent}
-            </div>
-          </Anchor>
-        </div>
-
+        { isShowToc ? (
+          <div className="toc-box">
+            <Anchor>
+              <div className="toc">
+                <span className="toc-title">文章目录</span>
+                {tocComponent}
+              </div>
+            </Anchor>
+          </div>
+        ) : null }
       </div>
     );
   }

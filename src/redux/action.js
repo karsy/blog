@@ -122,12 +122,13 @@ export const getArticleById = id => (dispatch) => {
   })
     .then((response) => {
       const data = response.data.content.retValue;
+      console.log(data);
       dispatch({
         type: 'GET_ARTICLE_DETAIL',
         payload: data
       });
     })
     .catch((err) => {
-      console.log(err);
+      console.error(err);
     });
 };

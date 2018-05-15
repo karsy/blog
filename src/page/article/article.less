@@ -37,10 +37,46 @@
       }
     }
   }
-  .readme {
+  .article-post {
     float: left;
-    width: 900px;
-    background-color: #FFF;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    .article-title {
+      text-align: center;
+      font-size: 25px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-weight: 500;
+      color: #333;
+      padding: 0 45px;
+    }
+    .article-sort-calendar {
+      text-align: center;
+      margin-top: 5px;
+      span {
+        padding-right: 30px;
+        &:last-child {
+          padding-right: 0;
+        }
+      }
+      i {
+        padding-right: 4px;
+      }
+    }
+    .article-digest {
+      font-size: 14px;
+      padding: 0 45px;
+      margin-top: 30px;
+      color: #666;
+      span {
+        font-weight: bold;
+      }
+    }
+  }
+  .readme .markdown-body {
+    border: none;
   }
 }
 
