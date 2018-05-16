@@ -11,7 +11,8 @@ export default {
   blog: {
     currentKey: 'all',
     sortList: [],
-    articleList: [],
+    isSpin: false,
+    articleData: {},
     b: {
 
     }

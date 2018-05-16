@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux';
 import defaultState from './state.js';
+import { debug } from 'util';
+// import { stat } from 'fs';
 
 const global = (state = defaultState.global, { type, payload }) => { // 全局通用配置
   switch (type) {
@@ -72,7 +74,15 @@ const blog = (state = defaultState.blog, { type, payload }) => {
       const value = payload;
       return {
         ...state,
-        articleList: value
+        articleData: value,
+        isSpin: false
+      };
+    }
+    case 'SWITCH_SPIN':
+    {
+      return {
+        ...state,
+        isSpin: !state.isSpin
       };
     }
     default:

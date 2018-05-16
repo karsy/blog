@@ -99,19 +99,36 @@ export const getSortList = () => (dispatch) => {
     });
 };
 
-export const getArticleList = type => (dispatch) => {
-  axios.get('http://localhost:3001/blog/queryArticle', {
-    params: {
-      type
-    }
-  })
-    .then((response) => {
-      const data = response.data.content.retValue;
-      dispatch({
-        type: 'GET_ARTICLE_LIST',
-        payload: data
-      });
+export const getArticleList = (type, page) => (dispatch) => {
+  // axios.get('http://localhost:3001/blog/queryArticle', {
+  //   params: {
+  //     type,
+  //     page
+  //   }
+  // })
+  //   .then((response) => {
+  //     const data = response.data.content.retValue;
+  //     dispatch({
+  //       type: 'GET_ARTICLE_LIST',
+  //       payload: data
+  //     });
+  //   });
+  const data = [];
+  for( let i = 0; i < 10; i++) {
+    data.push({
+      name: 'react' + (page || ''),
+      type: 'react',
+      logo: '1',
+      description: 'react是一个很牛逼的框架',
+      date: '2018-05-05'
     });
+  }
+  setTimeout(() => {
+    dispatch({
+      type: 'GET_ARTICLE_LIST',
+      payload: { allCount: 100, articleList: data }
+    });
+  }, 1000)
 };
 
 export const getArticleById = id => (dispatch) => {
@@ -131,4 +148,6 @@ export const getArticleById = id => (dispatch) => {
     .catch((err) => {
       console.error(err);
     });
-};
+  };
+
+  export const switchSpin = () => (dispatch) => dispatch({type: 'SWITCH_SPIN'});
