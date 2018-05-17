@@ -1,14 +1,12 @@
 import { combineReducers } from 'redux';
 import defaultState from './state.js';
-import { debug } from 'util';
-// import { stat } from 'fs';
 
-const global = (state = defaultState.global, { type, payload }) => { // 全局通用配置
+// 全局通用配置
+const global = (state = defaultState.global, { type, payload }) => {
   switch (type) {
     case 'HAHA111':
     {
       const value = payload;
-      alert(value);
       return {
         ...state,
         a: value
@@ -19,6 +17,7 @@ const global = (state = defaultState.global, { type, payload }) => { // 全局�
   }
 };
 
+// home路由配置
 const home = (state = defaultState.home, { type, payload }) => {
   switch (type) {
     case 'HAHA222':
@@ -43,6 +42,7 @@ const home = (state = defaultState.home, { type, payload }) => {
   }
 };
 
+// blog路由配置
 const blog = (state = defaultState.blog, { type, payload }) => {
   switch (type) {
     case 'HAHA333':
@@ -97,9 +97,10 @@ const blog = (state = defaultState.blog, { type, payload }) => {
     }
     case 'SWITCH_SPIN':
     {
+      const value = payload;
       return {
         ...state,
-        isSpin: !state.isSpin
+        isSpin: value
       };
     }
     default:
@@ -107,6 +108,7 @@ const blog = (state = defaultState.blog, { type, payload }) => {
   }
 };
 
+// article路由配置
 const article = (state = defaultState.article, { type, payload }) => {
   switch (type) {
     case 'GET_ARTICLE_DETAIL':
@@ -115,6 +117,14 @@ const article = (state = defaultState.article, { type, payload }) => {
       return {
         ...state,
         articleDetail: value
+      };
+    }
+    case 'SWITCH_SPIN':
+    {
+      const value = payload;
+      return {
+        ...state,
+        isSpin: value
       };
     }
     default:

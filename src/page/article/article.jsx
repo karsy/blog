@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import marked from 'marked';
 import highlight from 'highlight.js';
-import { Anchor, Icon } from 'antd';
+import { Anchor, Icon, Spin } from 'antd';
 import dayjs from 'dayjs';
-// import toc from 'markdown-toc';
+import NoComponent from '../../component/NoComponent';
 import {
   getArticleById
 } from '../../redux/action';
@@ -47,7 +47,6 @@ marked.Renderer.prototype.heading = (text, level) => {
 // 设置语法高亮
 marked.setOptions({
   highlight: (code) => {
-    console.log(highlight.highlightAuto(code).value);
     return highlight.highlightAuto(code).value;
   },
   pedantic: false,
@@ -67,16 +66,17 @@ class Article extends React.Component {
     };
   }
   componentDidMount() {
-    const { match } = this.props;
-    this.props.getArticleById(match.params.id);
+    const { match, getArticleById } = this.props;
+    getArticleById(match.params.id);
   }
 
   render() {
+    const { isSpin, articleDetail } = this.props;
     // console.log(JSON.stringify(this.props.articleDetail));
     const mdHtml = marked(this.props.articleDetail.content || '');
     const lexerData = marked.lexer(this.props.articleDetail.content || '').filter(item => item.type === 'heading');
     const isShowToc = lexerData.length >= 1;
-    console.log(lexerData);
+    // console.log(lexerData);
     // const tocX = toc(this.props.articleDetail.content || '');
     // console.log(tocRender(this.props.articleDetail.content || ''));
     // console.log(tocX);
@@ -86,29 +86,36 @@ class Article extends React.Component {
       );
     });
     return (
-      <div className="article">
-        <div className="article-post" style={{ width: `${isShowToc ? 900 : 1180}px` }}>
-          <div className="article-title">{this.props.articleDetail.title}</div>
-          <div className="article-sort-calendar">
-            <span><Icon type="profile" />{this.props.articleDetail.sort}</span>
-            <span><Icon type="calendar" />{dayjs(this.props.articleDetail.date).format('YYYY-MM-DD')}</span>
-          </div>
-          <div className="article-digest"><span>摘要：</span>{this.props.articleDetail.digest}</div>
-          <div className="readme">
-            <div className="markdown-body" dangerouslySetInnerHTML={{ __html: mdHtml }} />
-          </div>
-        </div>
-        { isShowToc ? (
-          <div className="toc-box">
-            <Anchor>
-              <div className="toc">
-                <span className="toc-title">文章目录</span>
-                {tocComponent}
+      <Spin size="large" spinning={isSpin}>
+        <div className="article">
+          <NoComponent loading={!mdHtml}>
+            <div className="article-post" style={{ width: `${isShowToc ? 900 : 1180}px` }}>
+              <div className="article-title">{articleDetail.title}</div>
+              <div className="article-sort-calendar">
+                <span><Icon type="profile" />{articleDetail.sort}</span>
+                <span>
+                  <Icon type="calendar" />
+                  { articleDetail.date ? dayjs(articleDetail.date).format('YYYY-MM-DD') : ''}
+                </span>
               </div>
-            </Anchor>
-          </div>
-        ) : null }
-      </div>
+              <div className="article-digest"><span>摘要：</span>{articleDetail.digest}</div>
+              <div className="readme">
+                <div className="markdown-body" dangerouslySetInnerHTML={{ __html: mdHtml }} />
+              </div>
+            </div>
+            { isShowToc ? (
+              <div className="toc-box">
+                <Anchor>
+                  <div className="toc">
+                    <span className="toc-title">文章目录</span>
+                    {tocComponent}
+                  </div>
+                </Anchor>
+              </div>
+            ) : null }
+          </NoComponent>
+        </div>
+      </Spin>
     );
   }
 }

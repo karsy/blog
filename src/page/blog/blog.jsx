@@ -2,8 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, Menu, Avatar, Icon, Input, Select, Pagination, Spin } from 'antd';
 import dayjs from 'dayjs';
+import EmptyData from '../../component/EmptyData';
+import NoComponent from '../../component/NoComponent';
 import {
-  alertHaha333,
   changeSort,
   getSortList,
   getArticleList,
@@ -27,7 +28,7 @@ class Blog extends React.Component {
     this.type = 'all';
     this.handleClick = this.handleClick.bind(this);
     this.handleArticleClick = this.handleArticleClick.bind(this);
-    this.switchPage = this.switchPage.bind(this);
+    this.onSwitchPage = this.onSwitchPage.bind(this);
     this.onSearch = this.onSearch.bind(this);
   }
   componentDidMount() {
@@ -43,15 +44,15 @@ class Blog extends React.Component {
     const { history } = this.props;
     history.push(`/home/article/${id}`);
   }
-  switchPage(page, pageSize) {
-    const { getArticleList, changePageParams, switchSpin, queryData } = this.props;
+  onSwitchPage(page, pageSize) {
+    const { getArticleList, changePageParams, queryData } = this.props;
     getArticleList({ currentPage: page, pageSize }, queryData);
-    changePageParams(page, pageSize);
-    switchSpin();
+    changePageParams({ currentPage: page, pageSize });
   }
   onSearch(value) {
-    const { getArticleList, changeQueryData, queryData, pageParams } = this.props;
-    getArticleList(pageParams, { ...queryData, key: value });
+    const { getArticleList, changeQueryData, changePageParams, queryData, pageParams } = this.props;
+    getArticleList({ ...pageParams, currentPage: 1 }, { ...queryData, key: value });
+    changePageParams({ ...pageParams, currentPage: 1 });
     changeQueryData({ ...queryData, key: value });
   }
   render() {
@@ -64,7 +65,7 @@ class Blog extends React.Component {
         </Menu.Item>
       );
     });
-    const articleComponent = articleData && articleData.map((item) => {
+    const articleComponent = articleData && articleData.length ? articleData.map((item) => {
       return (
         <li
           className="li-article"
@@ -79,7 +80,7 @@ class Blog extends React.Component {
           <p className="article-digest">{item.digest}</p>
         </li>
       );
-    });
+    }) : <EmptyData />;
     const queryOpitonList = queryOpitons.map((item, index) => <Option key={index} value={item.key}>{item.value}</Option>);
     return (
       <div className="blog">
@@ -116,18 +117,23 @@ class Blog extends React.Component {
                   </InputGroup>
                 </span>
               </div>
-              <Spin size="large" spinning={isSpin}>
+              <Spin size="large" spinning={isSpin} delay={500}>
                 <div className="list-article">
-                  <ul>{articleComponent}</ul>
+                  <NoComponent loading={isSpin}>
+                    <ul>{articleComponent}</ul>
+                  </NoComponent>
                 </div>
               </Spin>
               <Pagination
                 showQuickJumper
                 pageSize={pageParams.pageSize}
-                onChange={this.switchPage}
                 current={pageParams.currentPage}
                 total={total}
+                showSizeChanger
+                pageSizeOptions={['5', '10', '20', '50']}
                 showTotal={total => `共 ${total} 条`}
+                onChange={this.onSwitchPage}
+                onShowSizeChange={(page, pageSize) => { this.onSwitchPage(1, pageSize); }}
               />
             </div>
           </Col>
@@ -139,13 +145,12 @@ class Blog extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  alertHaha333: value => dispatch(alertHaha333(value)),
   changeSort: key => dispatch(changeSort(key)),
   getSortList: () => dispatch(getSortList()),
   getArticleList: (pageParams, queryData) => dispatch(getArticleList(pageParams, queryData)),
-  changePageParams: (page, pageSize) => dispatch(changePageParams(page, pageSize)),
+  changePageParams: value => dispatch(changePageParams(value)),
   changeQueryData: value => dispatch(changeQueryData(value)),
-  switchSpin: () => dispatch(switchSpin())
+  switchSpin: value => dispatch(switchSpin(value))
 });
 
 const mapStateToProps = ({ global, blog }) => ({

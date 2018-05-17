@@ -1,6 +1,14 @@
 
 import axios from 'axios';
 
+export const switchSpin = value => (dispatch) => {
+  dispatch({
+    type: 'SWITCH_SPIN',
+    payload: value
+  });
+};
+
+/**  主页  **/
 export const changeCurrentKey = value => (dispatch) => {
   dispatch({
     type: 'CHANGE_KEY',
@@ -8,33 +16,7 @@ export const changeCurrentKey = value => (dispatch) => {
   });
 };
 
-export const alertHaha111 = value => (dispatch) => {
-  setTimeout(() => {
-    dispatch({
-      type: 'HAHA111',
-      payload: value
-    });
-  }, 1000);
-};
-
-export const alertHaha222 = value => (dispatch) => {
-  setTimeout(() => {
-    dispatch({
-      type: 'HAHA222',
-      payload: value
-    });
-  }, 1000);
-};
-
-export const alertHaha333 = value => (dispatch) => {
-  setTimeout(() => {
-    dispatch({
-      type: 'HAHA333',
-      payload: value
-    });
-  }, 1000);
-};
-
+/**  博客首页  **/
 export const changeSort = key => (dispatch) => {
   alert(`当前的分类是：${key}`);
   dispatch({
@@ -87,7 +69,7 @@ export const getSortList = () => (dispatch) => {
       // });
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
       dispatch({
         type: 'GET_SORTLIST',
         payload: value
@@ -100,6 +82,7 @@ export const getSortList = () => (dispatch) => {
 };
 
 export const getArticleList = (pageParams, queryData) => (dispatch) => {
+  switchSpin(true)(dispatch);
   axios.get('http://localhost:3001/blog/queryArticle', {
     params: {
       type: queryData.type,
@@ -112,36 +95,18 @@ export const getArticleList = (pageParams, queryData) => (dispatch) => {
     .then((response) => {
       const articleData = response.data.content.retValue;
       const total = response.data.content.total;
+      switchSpin(false)(dispatch);
       dispatch({
         type: 'GET_ARTICLE_LIST',
         payload: { total, articleData }
       });
     });
-  // const data = [];
-  // for( let i = 0; i < 10; i++) {
-  //   data.push({
-  //     name: 'react' + (page || ''),
-  //     type: 'react',
-  //     logo: '1',
-  //     description: 'react是一个很牛逼的框架',
-  //     date: '2018-05-05'
-  //   });
-  // }
-  // setTimeout(() => {
-  //   dispatch({
-  //     type: 'GET_ARTICLE_LIST',
-  //     payload: { allCount: 100, articleList: data }
-  //   });
-  // }, 1000)
 };
 
-
-export const switchSpin = () => dispatch => dispatch({ type: 'SWITCH_SPIN' });
-
-export const changePageParams = (currentPage, pageSize) => (dispatch) => {
+export const changePageParams = value => (dispatch) => {
   dispatch({
     type: 'CHANGE_PAGEPARAMS',
-    payload: { currentPage, pageSize }
+    payload: value
   });
 };
 
@@ -152,6 +117,8 @@ export const changeQueryData = value => (dispatch) => {
   });
 };
 
+
+/**  文章详情页  **/
 export const getArticleById = id => (dispatch) => {
   axios.get('http://localhost:3001/blog/getArticleById', {
     params: {
@@ -160,7 +127,7 @@ export const getArticleById = id => (dispatch) => {
   })
     .then((response) => {
       const data = response.data.content.retValue;
-      console.log(data);
+      switchSpin(false)(dispatch);
       dispatch({
         type: 'GET_ARTICLE_DETAIL',
         payload: data
