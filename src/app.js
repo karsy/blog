@@ -1,10 +1,11 @@
 
 import ReactDOM from 'react-dom';
-import { Route, Switch, HashRouter } from 'react-router-dom';
+import { Route, Switch, BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import React, { Component } from 'react';
 import store from './redux/store';
 import Home from './page/home';
+
 
 class App extends Component {
   constructor(props) {
@@ -15,12 +16,12 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <HashRouter>
+        <BrowserRouter>
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/home" component={Home} />
           </Switch>
-        </HashRouter>
+        </BrowserRouter>
       </Provider>
     );
   }

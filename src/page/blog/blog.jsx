@@ -1,31 +1,39 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Row, Col, Menu, Avatar, Icon, Input, Pagination, Spin } from 'antd';
+import { Row, Col, Menu, Avatar, Icon, Input, Select, Pagination, Spin } from 'antd';
 import dayjs from 'dayjs';
 import {
   alertHaha333,
   changeSort,
   getSortList,
   getArticleList,
-  switchSpin
+  switchSpin,
+  changePageParams,
+  changeQueryData
 } from '../../redux/action';
+import { queryOpitons } from './const';
 
 import './blog.less';
 
 const Search = Input.Search;
+const InputGroup = Input.Group;
+const Option = Select.Option;
 
 class Blog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
     };
+    this.type = 'all';
     this.handleClick = this.handleClick.bind(this);
     this.handleArticleClick = this.handleArticleClick.bind(this);
     this.switchPage = this.switchPage.bind(this);
+    this.onSearch = this.onSearch.bind(this);
   }
   componentDidMount() {
-    this.props.getSortList();
-    this.props.getArticleList('all', 1);
+    const { getSortList, getArticleList, pageParams, queryData } = this.props;
+    getSortList();
+    getArticleList(pageParams, queryData);
   }
   handleClick(e) {
     if (e.key === this.props.currentKey) return;
@@ -36,17 +44,18 @@ class Blog extends React.Component {
     history.push(`/home/article/${id}`);
   }
   switchPage(page, pageSize) {
-    const { getArticleList, switchSpin } = this.props;
-    getArticleList('all', page);
-    switchSpin()
+    const { getArticleList, changePageParams, switchSpin, queryData } = this.props;
+    getArticleList({ currentPage: page, pageSize }, queryData);
+    changePageParams(page, pageSize);
+    switchSpin();
+  }
+  onSearch(value) {
+    const { getArticleList, changeQueryData, queryData, pageParams } = this.props;
+    getArticleList(pageParams, { ...queryData, key: value });
+    changeQueryData({ ...queryData, key: value });
   }
   render() {
-    const {
-      sortList,
-      articleData,
-      currentKey,
-      isSpin
-    } = this.props;
+    const { sortList, articleData, currentKey, isSpin, pageParams, total } = this.props;
     const menuItems = sortList.map((item) => {
       return (
         <Menu.Item key={item.type}>
@@ -55,22 +64,23 @@ class Blog extends React.Component {
         </Menu.Item>
       );
     });
-    const articleList = articleData.articleList && articleData.articleList.map((item) => {
+    const articleComponent = articleData && articleData.map((item) => {
       return (
         <li
           className="li-article"
           onClick={this.handleArticleClick.bind(this, item.id)}
           key={item.id}
         >
-          <p className="article-title">{item.name}</p>
+          <p className="article-title">{item.title}</p>
           <p className="article-sort-calendar">
             <span><Icon type="profile" />{item.sort}</span>
             <span><Icon type="calendar" />{dayjs(item.date).format('YYYY-MM-DD')}</span>
           </p>
-          <p className="article-digest">{item.description}</p>
+          <p className="article-digest">{item.digest}</p>
         </li>
       );
     });
+    const queryOpitonList = queryOpitons.map((item, index) => <Option key={index} value={item.key}>{item.value}</Option>);
     return (
       <div className="blog">
         <Row>
@@ -90,29 +100,35 @@ class Blog extends React.Component {
           <Col span={16}>
             <div className="list">
               <div className="top-search-bar">
-                <Col span={1} />
-                <Col span={3}>文章列表</Col>
-                <Col span={12} />
-                <Col span={7}>
-                  文章搜索：
-                  <Search
-                    placeholder="input search text"
-                    onSearch={value => console.log(value)}
-                    style={{ width: 194 }}
-                  />
-                </Col>
-                <Col span={1} />
+                <span>文章列表</span>
+                <span className="top-search-bar-search">
+                  <InputGroup compact>
+                    <Select
+                      onChange={(value) => { this.props.changeQueryData({ ...this.props.queryData, type: value }); }}
+                      defaultValue="all"
+                    >{queryOpitonList}</Select>
+                    <Search
+                      placeholder="请输入关键字"
+                      onSearch={this.onSearch}
+                      style={{ width: 240 }}
+                      enterButton
+                    />
+                  </InputGroup>
+                </span>
               </div>
               <Spin size="large" spinning={isSpin}>
                 <div className="list-article">
-                  <div style={{ height: '880px' }}>
-                    <ul>
-                      {articleList}
-                    </ul>
-                  </div>
+                  <ul>{articleComponent}</ul>
                 </div>
               </Spin>
-              <Pagination showQuickJumper pageSize={10} onChange={this.switchPage} defaultCurrent={1} total={articleData.allCount || 0} />
+              <Pagination
+                showQuickJumper
+                pageSize={pageParams.pageSize}
+                onChange={this.switchPage}
+                current={pageParams.currentPage}
+                total={total}
+                showTotal={total => `共 ${total} 条`}
+              />
             </div>
           </Col>
           <Col span={4}>col-4</Col>
@@ -126,7 +142,9 @@ const mapDispatchToProps = dispatch => ({
   alertHaha333: value => dispatch(alertHaha333(value)),
   changeSort: key => dispatch(changeSort(key)),
   getSortList: () => dispatch(getSortList()),
-  getArticleList: (type, page) => dispatch(getArticleList(type, page)),
+  getArticleList: (pageParams, queryData) => dispatch(getArticleList(pageParams, queryData)),
+  changePageParams: (page, pageSize) => dispatch(changePageParams(page, pageSize)),
+  changeQueryData: value => dispatch(changeQueryData(value)),
   switchSpin: () => dispatch(switchSpin())
 });
 

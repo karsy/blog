@@ -99,36 +99,57 @@ export const getSortList = () => (dispatch) => {
     });
 };
 
-export const getArticleList = (type, page) => (dispatch) => {
-  // axios.get('http://localhost:3001/blog/queryArticle', {
-  //   params: {
-  //     type,
-  //     page
-  //   }
-  // })
-  //   .then((response) => {
-  //     const data = response.data.content.retValue;
-  //     dispatch({
-  //       type: 'GET_ARTICLE_LIST',
-  //       payload: data
-  //     });
+export const getArticleList = (pageParams, queryData) => (dispatch) => {
+  axios.get('http://localhost:3001/blog/queryArticle', {
+    params: {
+      type: queryData.type,
+      key: queryData.key,
+      sort: queryData.sort,
+      currentPage: pageParams.currentPage,
+      pageSize: pageParams.pageSize
+    }
+  })
+    .then((response) => {
+      const articleData = response.data.content.retValue;
+      const total = response.data.content.total;
+      dispatch({
+        type: 'GET_ARTICLE_LIST',
+        payload: { total, articleData }
+      });
+    });
+  // const data = [];
+  // for( let i = 0; i < 10; i++) {
+  //   data.push({
+  //     name: 'react' + (page || ''),
+  //     type: 'react',
+  //     logo: '1',
+  //     description: 'react是一个很牛逼的框架',
+  //     date: '2018-05-05'
   //   });
-  const data = [];
-  for( let i = 0; i < 10; i++) {
-    data.push({
-      name: 'react' + (page || ''),
-      type: 'react',
-      logo: '1',
-      description: 'react是一个很牛逼的框架',
-      date: '2018-05-05'
-    });
-  }
-  setTimeout(() => {
-    dispatch({
-      type: 'GET_ARTICLE_LIST',
-      payload: { allCount: 100, articleList: data }
-    });
-  }, 1000)
+  // }
+  // setTimeout(() => {
+  //   dispatch({
+  //     type: 'GET_ARTICLE_LIST',
+  //     payload: { allCount: 100, articleList: data }
+  //   });
+  // }, 1000)
+};
+
+
+export const switchSpin = () => dispatch => dispatch({ type: 'SWITCH_SPIN' });
+
+export const changePageParams = (currentPage, pageSize) => (dispatch) => {
+  dispatch({
+    type: 'CHANGE_PAGEPARAMS',
+    payload: { currentPage, pageSize }
+  });
+};
+
+export const changeQueryData = value => (dispatch) => {
+  dispatch({
+    type: 'CHANGE_QUERYDATA',
+    payload: value
+  });
 };
 
 export const getArticleById = id => (dispatch) => {
@@ -148,6 +169,4 @@ export const getArticleById = id => (dispatch) => {
     .catch((err) => {
       console.error(err);
     });
-  };
-
-  export const switchSpin = () => (dispatch) => dispatch({type: 'SWITCH_SPIN'});
+};

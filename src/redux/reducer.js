@@ -74,8 +74,25 @@ const blog = (state = defaultState.blog, { type, payload }) => {
       const value = payload;
       return {
         ...state,
-        articleData: value,
+        total: value.total,
+        articleData: value.articleData,
         isSpin: false
+      };
+    }
+    case 'CHANGE_PAGEPARAMS':
+    {
+      const value = payload;
+      return {
+        ...state,
+        pageParams: value
+      };
+    }
+    case 'CHANGE_QUERYDATA':
+    {
+      const value = payload;
+      return {
+        ...state,
+        queryData: value
       };
     }
     case 'SWITCH_SPIN':
