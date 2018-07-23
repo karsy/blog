@@ -30,6 +30,8 @@ export default {
   // 文章路由state
   article: {
     articleDetail: {},
+    mdHtml: '',
+    lexerData: [],
     isSpin: true
   }
 };

@@ -1,7 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import marked from 'marked';
-import highlight from 'highlight.js';
 import { Anchor, Icon, Spin } from 'antd';
 import dayjs from 'dayjs';
 import NoComponent from '../../component/NoComponent';
@@ -14,51 +12,6 @@ import './article.less';
 
 const { Link } = Anchor;
 
-// 源码如下：
-// Renderer.prototype.heading = (text, level, raw) => {
-//   if (this.options.headerIds) {
-//     return '<h'
-//       + level
-//       + ' id="'
-//       + this.options.headerPrefix
-//       + raw.toLowerCase().replace(/[^\w]+/g, '-')
-//       + '">'
-//       + text
-//       + '</h'
-//       + level
-//       + '>\n';
-//   }
-//   // ignore IDs
-//   return '<h' + level + '>' + text + '</h' + level + '>\n';
-// };
-
-// 重写heading源码，自定义render，同时修复``转成code的问题，让id = text（当出现两个相同的toc时，会生成两个同样的id，这点待fix）
-marked.Renderer.prototype.heading = (text, level) => {
-  const rules = [
-    { from: /<code>/g, to: '`' },
-    { from: /<\/code>/g, to: '`' }
-  ];
-  const saveText = text;
-  let decodeText = text;
-  rules.forEach((item) => { decodeText = decodeText.replace(item.from, item.to); });
-  return `<h${level} id="${decodeText}">${saveText}</h${level}>\n`;
-};
-
-// 设置语法高亮
-marked.setOptions({
-  highlight: (code) => {
-    return highlight.highlightAuto(code).value;
-  },
-  pedantic: false,
-  gfm: true,
-  tables: true,
-  breaks: false,
-  sanitize: false,
-  smartLists: true,
-  smartypants: false,
-  xhtml: false
-});
-
 class Article extends React.Component {
   constructor(props) {
     super(props);
@@ -70,10 +23,9 @@ class Article extends React.Component {
     getArticleById(match.params.id);
   }
 
-  renderToc = (lexerData) => {
-    console.log(lexerData);
+  renderToc = () => {
+    const { lexerData } = this.props;
     const tocData = convertLexerToTree(lexerData);
-    console.log(tocData);
     const getChildToc = (data) => {
       return data.map((item) => {
         return (
@@ -96,23 +48,12 @@ class Article extends React.Component {
   }
 
   render() {
-    const { isSpin, articleDetail } = this.props;
-    // console.log(JSON.stringify(this.props.articleDetail));
-    const mdHtml = marked(this.props.articleDetail.content || '');
-    const lexerData = marked.lexer(this.props.articleDetail.content || '').filter(item => item.type === 'heading');
-    // const lexerData = [
-    //   { type: "heading", depth: 1, text: "1、前言" },
-    //   { type: "heading", depth: 3, text: "2、性能问题源自何处" },
-    //   { type: "heading", depth: 2, text: "2、解决方案" },
-    //   { type: "heading", depth: 3, text: "2.1 合理去除对一些代码库的构建" },
-    //   { type: "heading", depth: 1, text: "1. 使用 `externals` 配置来提取常用库" },
-    //   { type: "heading", depth: 2, text: "2. 利用 `DllPlugin` 和 `DllReferencePlugin` 预编译资源模块" },
-    //   { type: "heading", depth: 3, text: "3. webpack `Plugin` 和 `DllReferencePlugin` 预编译资源模块" },
-    // ];
+    const { isSpin, articleDetail, mdHtml, lexerData } = this.props;
     const isShowToc = lexerData.length >= 1;
     return (
       <Spin size="large" spinning={isSpin}>
         <div className="article">
+          {/* <div dangerouslySetInnerHTML="<span>111</span>" /> */}
           <NoComponent loading={!mdHtml}>
             <div className="article-post" style={{ width: `${isShowToc ? 900 : 1180}px` }}>
               <div className="article-title">{articleDetail.title}</div>
@@ -128,7 +69,7 @@ class Article extends React.Component {
                 <div className="markdown-body" dangerouslySetInnerHTML={{ __html: mdHtml }} />
               </div>
             </div>
-            { isShowToc ? this.renderToc(lexerData) : null }
+            { isShowToc ? this.renderToc() : null }
           </NoComponent>
         </div>
       </Spin>

@@ -39,8 +39,10 @@ class Blog extends React.Component {
   }
 
   handleClick(e) {
-    if (e.key === this.props.currentKey) return;
-    this.props.changeSort(e.key);
+    const { changeSort, getArticleList, currentKey, pageParams, queryData } = this.props;
+    if (e.key === currentKey) return;
+    changeSort(e.key);
+    getArticleList(pageParams, { ...queryData, sort: e.key });
   }
 
   handleArticleClick(id) {

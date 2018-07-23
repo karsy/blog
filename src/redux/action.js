@@ -1,5 +1,34 @@
 
 import axios from 'axios';
+import marked from 'marked';
+import highlight from 'highlight.js';
+
+// 重写heading源码，自定义render，同时修复``转成code的问题，让id = text（当出现两个相同的toc时，会生成两个同样的id，这点待fix）
+marked.Renderer.prototype.heading = (text, level) => {
+  const rules = [
+    { from: /<code>/g, to: '`' },
+    { from: /<\/code>/g, to: '`' }
+  ];
+  const saveText = text;
+  let decodeText = text;
+  rules.forEach((item) => { decodeText = decodeText.replace(item.from, item.to); });
+  return `<h${level} id="${decodeText}">${saveText}</h${level}>\n`;
+};
+
+// 设置语法高亮
+marked.setOptions({
+  highlight: (code) => {
+    return highlight.highlightAuto(code).value;
+  },
+  pedantic: false,
+  gfm: true,
+  tables: true,
+  breaks: false,
+  sanitize: false,
+  smartLists: true,
+  smartypants: false,
+  xhtml: false
+});
 
 export const switchSpin = value => (dispatch) => {
   dispatch({
@@ -18,7 +47,6 @@ export const changeCurrentKey = value => (dispatch) => {
 
 /**  博客首页  **/
 export const changeSort = key => (dispatch) => {
-  alert(`当前的分类是：${key}`);
   dispatch({
     type: 'CHANGE_SORT_KEY',
     payload: key
@@ -36,7 +64,7 @@ export const getSortList = () => (dispatch) => {
     },
     {
       name: 'react',
-      type: 'react',
+      type: 'a1',
       logo: '1',
       description: 'react是一个很牛逼的框架',
       date: '2018-05-05'
@@ -127,10 +155,16 @@ export const getArticleById = id => (dispatch) => {
   })
     .then((response) => {
       const data = response.data.content.retValue;
+      const mdHtml = marked(data.content);
+      const lexerData = marked.lexer(data.content).filter(item => item.type === 'heading');
       switchSpin(false)(dispatch);
       dispatch({
         type: 'GET_ARTICLE_DETAIL',
-        payload: data
+        payload: {
+          data,
+          mdHtml,
+          lexerData
+        }
       });
     })
     .catch((err) => {

@@ -23,7 +23,6 @@ const home = (state = defaultState.home, { type, payload }) => {
     case 'HAHA222':
     {
       const value = payload;
-      alert(value);
       return {
         ...state,
         a: value
@@ -116,7 +115,9 @@ const article = (state = defaultState.article, { type, payload }) => {
       const value = payload;
       return {
         ...state,
-        articleDetail: value
+        articleDetail: value.data,
+        mdHtml: value.mdHtml,
+        lexerData: value.lexerData
       };
     }
     case 'SWITCH_SPIN':
